@@ -119,7 +119,6 @@ pub fn detect_dotnet(target: &[u8]) -> Result<DotNetResult, String> {
     result.is_dotnet = true;
     let file_alignment = optional_header.windows_fields.file_alignment;
     let sections = &exe.sections;
-    // Consider adding default runtime if not detected, instead of throwing error
     let cli_header_value: CliHeader = match get_data(target, sections, *clr_runtime, file_alignment) {
         Ok(cli) => cli,
         Err(_) => {
