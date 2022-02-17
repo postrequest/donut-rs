@@ -7,11 +7,11 @@ use crate::utils::*;
 pub fn encrypt(master_key: [u8; 16], ctr: [u8; 16], data: Vec<u8>) -> Vec<u8> {
     let mut ctr = ctr;
     let mut length = data.len() as u32;
-    let mut x_u8 = [0u8; 16]; 
+    let mut x_u8 = [0u8; 16];
     let mut x = [0u32; 4];
     let mut r = 0u32;
     let mut p: usize = 0;
-    let mut encrypted = data.clone();
+    let mut encrypted = data;
     let key = to_u32x4(&master_key);
     while length > 0 {
         // copy counter and nonce to local buffer
@@ -30,7 +30,7 @@ pub fn encrypt(master_key: [u8; 16], ctr: [u8; 16], data: Vec<u8>) -> Vec<u8> {
         let mut i: usize = 0;
         while i < r as _ {
             x_u8 = from_u32x4(x);
-            encrypted[p+i] ^= x_u8[i];
+            encrypted[p + i] ^= x_u8[i];
             i += 1;
         }
 
@@ -41,12 +41,12 @@ pub fn encrypt(master_key: [u8; 16], ctr: [u8; 16], data: Vec<u8>) -> Vec<u8> {
         // update counter
         i = 16;
         while i > 0 {
-            if ctr[i-1] == std::u8::MAX {
-                ctr[i-1] = 0;
+            if ctr[i - 1] == std::u8::MAX {
+                ctr[i - 1] = 0;
             } else {
-                ctr[i-1] += 1;
+                ctr[i - 1] += 1;
             }
-            if ctr[i-1] != 0 {
+            if ctr[i - 1] != 0 {
                 break;
             }
             i -= 1;
@@ -56,7 +56,7 @@ pub fn encrypt(master_key: [u8; 16], ctr: [u8; 16], data: Vec<u8>) -> Vec<u8> {
 }
 
 pub fn rotr32(v: u32, n: u32) -> u32 {
-    (v >> n) | (v << (32 -n))
+    (v >> n) | (v << (32 - n))
 }
 
 pub fn speck(mk: [u8; MARU_BLK_LEN], p: u64) -> u64 {
@@ -90,7 +90,7 @@ pub fn speck(mk: [u8; MARU_BLK_LEN], p: u64) -> u64 {
 pub fn maru(input: [u8; DONUT_MAX_NAME], iv: u64) -> u64 {
     let mut h = iv;
     let mut b = [0u8; MARU_BLK_LEN];
-    
+
     // cut slice at first occurence of 0
     let zero_location = input.iter().position(|x| *x == 0).unwrap();
     let input = &input[0..zero_location];
@@ -107,11 +107,11 @@ pub fn maru(input: [u8; DONUT_MAX_NAME], iv: u64) -> u64 {
             }
             // store the end bit
             b[idx] = 0x80;
-            if idx >= MARU_BLK_LEN-4 {
+            if idx >= MARU_BLK_LEN - 4 {
                 h ^= speck(b, h);
                 b = [0u8; MARU_BLK_LEN];
             }
-            let tmp_b = pack((length*8) as u32);
+            let tmp_b = pack((length * 8) as u32);
             b[12] = tmp_b[0];
             b[13] = tmp_b[1];
             b[14] = tmp_b[2];
@@ -130,4 +130,3 @@ pub fn maru(input: [u8; DONUT_MAX_NAME], iv: u64) -> u64 {
     }
     h
 }
-

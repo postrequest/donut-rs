@@ -1,5 +1,5 @@
-use byteorder::{ByteOrder, LittleEndian, ReadBytesExt};
 use crate::definitions::*;
+use byteorder::{ByteOrder, LittleEndian, ReadBytesExt};
 use rand::Rng;
 use std::convert::TryInto;
 
@@ -7,11 +7,11 @@ pub fn random_string(size: usize) -> String {
     const CHARSET: &[u8] = b"abcdefghijklmnopqrstuvwxyz";
     let mut rng = rand::thread_rng();
     let rand_string: String = (0..size)
-    .map(|_| {
-        let idx = rng.gen_range(0, CHARSET.len());
-        CHARSET[idx] as char
-    })
-    .collect();
+        .map(|_| {
+            let idx = rng.gen_range(0, CHARSET.len());
+            CHARSET[idx] as char
+        })
+        .collect();
     rand_string
 }
 
@@ -24,10 +24,8 @@ pub fn to_array_donut_max_name(target: &str) -> [u8; DONUT_MAX_NAME] {
 
 pub fn to_array_usize<const N: usize>(target: &str) -> [u8; N] {
     let mut tmp = [0u8; N];
-    let mut i = 0;
-    for byte in target.bytes() {
+    for (i, byte) in target.bytes().enumerate() {
         tmp[i] = byte;
-        i += 1;
     }
     tmp
 }
@@ -61,13 +59,13 @@ pub fn array_to_u128(arr: [u8; 16]) -> u128 {
 pub fn pack(val: u32) -> [u8; 4] {
     let mut bytes = [0; 4];
     LittleEndian::write_u32(&mut bytes, val);
-    return bytes
+    bytes
 }
 
 pub fn pack_u64(val: u64) -> [u8; 8] {
     let mut bytes = [0; 8];
     LittleEndian::write_u64(&mut bytes, val);
-    return bytes
+    bytes
 }
 
 pub fn to_u32x4(bytes: &[u8; 16]) -> [u32; 4] {
@@ -75,7 +73,7 @@ pub fn to_u32x4(bytes: &[u8; 16]) -> [u32; 4] {
         LittleEndian::read_u32(&bytes[0..4]),
         LittleEndian::read_u32(&bytes[4..8]),
         LittleEndian::read_u32(&bytes[8..12]),
-        LittleEndian::read_u32(&bytes[12..16])
+        LittleEndian::read_u32(&bytes[12..16]),
     ]
 }
 
@@ -103,9 +101,5 @@ pub fn from_u32x4(target: [u32; 4]) -> [u8; 16] {
 }
 
 pub unsafe fn any_as_u8_slice<T: Sized>(p: &T) -> &[u8] {
-    ::std::slice::from_raw_parts(
-        (p as *const T) as *const u8,
-        ::std::mem::size_of::<T>(),
-    )
+    ::std::slice::from_raw_parts((p as *const T) as *const u8, ::std::mem::size_of::<T>())
 }
-

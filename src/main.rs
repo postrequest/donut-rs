@@ -6,10 +6,7 @@ pub mod utils;
 
 use definitions::{DonutConfig, DonutParser};
 use donut::{create_config, donut_from_file};
-use std::{
-    fs,
-    io::prelude::*,
-};
+use std::{fs, io::prelude::*};
 
 fn main() {
     // parse args
@@ -25,7 +22,7 @@ fn main() {
         Err(e) => {
             println!("{}", e);
             std::process::exit(1);
-        },
+        }
     };
 
     // write payload to file
@@ -34,4 +31,3 @@ fn main() {
         .write_all(&payload)
         .expect("could not write contents to output file");
 }
-
